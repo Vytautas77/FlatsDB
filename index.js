@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const flatRouter = require("./router/flats");
+const userRouter = require("./router/user");
 
 require("dotenv").config();
 
@@ -17,6 +18,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(flatRouter);
+app.use(userRouter);
 
 // eslint-disable-next-line no-undef
 app.listen(process.env.PORT, () =>
