@@ -6,6 +6,7 @@ const flatSchema = mongoose.Schema({
   plotas: { type: Number, required: true },
   plotoVienetas: { type: String, required: true },
   kambariuSkaicius: { type: Number, required: true },
+  id: { type: String },
 });
 
 module.exports = mongoose.model("flats", flatSchema);

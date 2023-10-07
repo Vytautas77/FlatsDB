@@ -5,7 +5,6 @@ const flatRouter = require("./router/flats");
 const userRouter = require("./router/user");
 
 require("dotenv").config();
-
 mongoose
   // eslint-disable-next-line no-undef
   .connect(process.env.DB_CONNECT)
@@ -19,6 +18,10 @@ app.use(cors());
 app.use(express.json());
 app.use(flatRouter);
 app.use(userRouter);
+
+app.use((req, res) => {
+  return res.status(404).json({ response: "Indpoint not exis!" });
+});
 
 // eslint-disable-next-line no-undef
 app.listen(process.env.PORT, () =>
