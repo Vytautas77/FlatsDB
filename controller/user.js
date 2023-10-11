@@ -53,8 +53,10 @@ const GET_USER_BY_ID_WITH_FLAT = async (req, res) => {
         },
         { $match: { _id: new ObjectId(req.params.id) } }, // useris su musu nurodytu id
       ])
-      .exec();
-    return res.status(201).json({ user: userResponse });
+      .exec()
+      .then((response) => {
+        return res.status(201).json({ user: response });
+      });
   } catch (err) {
     console.log("ERROR: ", err);
     res.status(500).json({ response: "Something went wrong!" });
@@ -71,7 +73,7 @@ const UPDATE_USER = async (req, res) => {
       .status(200)
       .json({ status: "Task was updated", response: userResponse });
   } catch (err) {
-    console.log("ERROS: ", err);
+    console.log("ERROR: ", err);
     res.status(500).json({ response: "Something went wrong!" });
   }
 };
@@ -83,7 +85,7 @@ const DELETE_USER = async (req, res) => {
       .status(200)
       .json({ response: userResponse, status: "Task was deleted!" });
   } catch (err) {
-    console.log("ERROS: ", err);
+    console.log("ERROR: ", err);
     res.status(500).json({ response: "Something went wrong!" });
   }
 };
