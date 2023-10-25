@@ -2,21 +2,79 @@ const { response } = require("express");
 const userModel = require("../models/user");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
+const bcrypt = require("bcryptjs");
 
-const ADD_USER = async (req, res) => {
+// const ADD_USER = async (req, res) => {
+//   try {
+//     const user = new userModel({
+//       name: req.body.name,
+//       email: req.body.email,
+//       userFlatProducts: [],
+//     });
+//     const userResponse = await user.save();
+//     return res
+//       .status(201)
+//       .json({ response: "User was added", user: userResponse });
+//   } catch (err) {
+//     console.log("ERROR: ", err);
+//     res.status(500).json({ response: "Something went wrong!" });
+//   }
+// };
+// add su hash password
+// const ADD_USER = (req, res) => {
+//   bcrypt.genSalt(10, (err, salt) => {
+//     if (err) {
+//       res.status(500).json({ response: "something went wrong in generate" });
+//     }
+//     bcrypt.hash(req.body.password, salt, (err, hash) => {
+//       if (err) {
+//         res.status(500).json({ response: "something went wrong in hash" });
+//       }
+//       const user = new userModel({
+//         name: req.body.name,
+//         email: req.body.email,
+//         userFlatProducts: [],
+//         password: hash,
+//       });
+//       user
+//         .save()
+//         .then((dbResponse) => {
+//           return res
+//             .status(201)
+//             .json({ response: "User was added", user: dbResponse });
+//         })
+//         .catch((err) => {
+//           console.log("ERROR: ", err);
+//           res.status(500).json({ response: "something went wrong" });
+//         });
+//     });
+//   });
+// };
+
+const ADD_USER = (req, res) => {
   try {
+    const salt = bcrypt.genSaltSync(10);
+    var hash = bcrypt.hashSync(req.body.password, salt);
     const user = new userModel({
       name: req.body.name,
       email: req.body.email,
-      userFlatProducts: [],
+      user_tasks: [],
+      password: hash,
     });
-    const userResponse = await user.save();
-    return res
-      .status(201)
-      .json({ response: "User was added", user: userResponse });
+    user
+      .save()
+      .then((dbResponse) => {
+        return res
+          .status(201)
+          .json({ response: "User was added", user: dbResponse });
+      })
+      .catch((err) => {
+        console.log("ERROR: ", err);
+        res.status(500).json({ response: "something went wrong" });
+      });
   } catch (err) {
-    console.log("ERROR: ", err);
-    res.status(500).json({ response: "Something went wrong!" });
+    console.log(err);
+    res.status(500).json({ response: "something went wrong" });
   }
 };
 
