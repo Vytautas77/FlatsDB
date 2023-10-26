@@ -1,5 +1,3 @@
-// eslint-disable-next-line no-unused-vars
-const { response } = require("express");
 const userModel = require("../models/user");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
