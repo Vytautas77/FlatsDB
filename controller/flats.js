@@ -37,13 +37,13 @@ const ADD_FLAT_USER_ID = async (req, res) => {
     const flatResponse = await flat.save();
     await userModel //objekto id ikeliame i userio masyva userFlatProducts
       .updateOne(
-        { _id: req.params.userId },
+        { _id: req.body.userId },
         { $push: { userFlatProducts: flatResponse._id } }
       )
       .exec();
     return res
       .status(201)
-      .json({ response: "Flat was added", flat: dbResponse });
+      .json({ response: "Flat was added", flat: flatResponse });
   } catch (err) {
     console.log("ERROR: ", err);
     res.status(500).json({ response: "Something went wrong!" });
