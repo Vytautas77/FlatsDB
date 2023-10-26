@@ -1,8 +1,10 @@
+// eslint-disable-next-line no-unused-vars
 const { response } = require("express");
 const userModel = require("../models/user");
 const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 // const ADD_USER = async (req, res) => {
 //   try {
@@ -51,6 +53,33 @@ const bcrypt = require("bcryptjs");
 //   });
 // };
 
+// const ADD_USER = (req, res) => {
+//   try {
+//     const salt = bcrypt.genSaltSync(10);
+//     var hash = bcrypt.hashSync(req.body.password, salt);
+//     const user = new userModel({
+//       name: req.body.name,
+//       email: req.body.email,
+//       user_tasks: [],
+//       password: hash,
+//     });
+//     user
+//       .save()
+//       .then((dbResponse) => {
+//         return res
+//           .status(201)
+//           .json({ response: "User was added", user: dbResponse });
+//       })
+//       .catch((err) => {
+//         console.log("ERROR: ", err);
+//         res.status(500).json({ response: "something went wrong" });
+//       });
+//   } catch (err) {
+//     console.log(err);
+//     res.status(500).json({ response: "something went wrong" });
+//   }
+// };
+
 const ADD_USER = (req, res) => {
   try {
     const salt = bcrypt.genSaltSync(10);
@@ -78,6 +107,31 @@ const ADD_USER = (req, res) => {
   }
 };
 
+const LOGIN = async (req, res) => {
+  const user = await userModel.findOne({ email: req.body.email });
+  console.log(user);
+
+  if (!user) {
+    return res.status(404).json({ response: "Bad auth User does not exist!" });
+  }
+
+  bcrypt.compare(req.body.password, user.password, (err, isPasswordMatch) => {
+    if (!isPasswordMatch || err) {
+      return res.status(401).json({ response: "Bad auth" });
+    }
+    const token = jwt.sign(
+      {
+        email: user.email,
+        userId: user._id,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "12h" },
+      { algorithm: "R5256" }
+    );
+    return res.status(201).json({ jwt: token });
+  });
+};
+
 const GET_ALL_USERS = async (req, res) => {
   try {
     const userResponse = await userModel.find();
@@ -99,6 +153,7 @@ const GET_USER_BY_ID = async (req, res) => {
 
 const GET_USER_BY_ID_WITH_FLAT = async (req, res) => {
   try {
+    // eslint-disable-next-line no-unused-vars
     const useResponse = await userModel
       .aggregate([
         {
@@ -155,4 +210,5 @@ module.exports = {
   GET_USER_BY_ID_WITH_FLAT,
   UPDATE_USER,
   DELETE_USER,
+  LOGIN,
 };
